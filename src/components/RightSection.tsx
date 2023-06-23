@@ -3,7 +3,7 @@ import { BsSearch } from "react-icons/bs";
 
 const RightSection = () => {
   return (
-    <section className="w-full sticky top-2 overflow-scroll mt-2 flex flex-col items-stretch h-screen px-6">
+    <section className="w-full sticky hidden top-2 overflow-scroll mt-2 xl:flex flex-col items-stretch h-screen px-6">
       <div>
         <div className="relative w-full h-full group">
           <input

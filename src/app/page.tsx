@@ -1,6 +1,8 @@
-import LeftSidebar from "@/components/LeftSidebar";
-import MainComponent from "@/components/MainComponent";
-import RightSection from "@/components/RightSection";
+import LeftSidebar from "@/components/left-sidebar";
+import MainComponent from "@/components/main-component";
+import RightSection from "@/components/right-section";
+
+export const revalidate = 0;
 
 const Home = async () => {
   return (

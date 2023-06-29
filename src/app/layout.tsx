@@ -1,5 +1,7 @@
+import LeftSidebar from "@/components/left-sidebar";
 import "./globals.css";
 import SupabaseProvider from "./supabase-provider";
+import RightSection from "@/components/right-section";
 
 export const metadata = {
   title: "Create Next App",
@@ -14,7 +16,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SupabaseProvider>{children}</SupabaseProvider>
+        <div className="w-full h-full flex justify-center items-center relative bg-black text-white">
+          <div className="xl:max-w-[70vw] w-full h-full flex relative">
+            <LeftSidebar />
+            <SupabaseProvider>{children}</SupabaseProvider>
+            <RightSection />
+          </div>
+        </div>
       </body>
     </html>
   );

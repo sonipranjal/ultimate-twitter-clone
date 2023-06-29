@@ -16,8 +16,6 @@ const MainComponent = async () => {
 
   const res = await getTweets(userData.user?.id);
 
-  console.log(res);
-
   return (
     <main className="flex w-full h-full min-h-screen flex-col border-l-[0.5px] border-r-[0.5px] border-gray-600">
       <h1 className="text-xl font-bold p-6 backdrop-blur bg-black/10 sticky top-0">
@@ -28,15 +26,26 @@ const MainComponent = async () => {
         <ComposeTweet />
       </div>
       <div className="w-full">
-        {res?.error && <div>Something wrong with the server</div>}
-        {res?.data &&
-          res.data.map((tweet: any) => (
-            <Tweet
-              key={tweet.id}
-              tweet={tweet}
-              currentUserId={userData.user?.id}
-            />
-          ))}
+        {res &&
+          res.map(({ likes, tweet, profile, hasLiked }) => {
+            // console.log(likes);
+            return (
+              <Tweet
+                key={tweet.id}
+                tweet={{
+                  tweetDetails: {
+                    ...tweet,
+                  },
+                  userProfile: {
+                    ...profile,
+                  },
+                }}
+                likesCount={likes.length}
+                currentUserId={userData.user?.id}
+                hasLiked={hasLiked}
+              />
+            );
+          })}
       </div>
     </main>
   );

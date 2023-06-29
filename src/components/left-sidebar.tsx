@@ -48,7 +48,11 @@ const LeftSidebar = () => {
         {NAVIGATION_ITEMS.map((item) => (
           <Link
             className="hover:bg-white/10 text-2xl transition duration-200 flex items-center justify-start w-fit space-x-4 rounded-3xl py-2 px-6"
-            href={`/${item.title.toLowerCase()}`}
+            href={
+              item.title.toLocaleLowerCase() === "home"
+                ? "/"
+                : `/${item.title.toLowerCase()}`
+            }
             key={item.title}
           >
             <div>

@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1687967377735,
+      "tag": "0000_dazzling_adam_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1687967435759,
+      "tag": "0001_reflective_doctor_strange",
+      "breakpoints": true
+    }
+  ]
+}

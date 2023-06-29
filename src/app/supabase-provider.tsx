@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 
-import type { SupabaseClient } from "@supabase/auth-helpers-nextjs";
+import type { SupabaseClient, User } from "@supabase/auth-helpers-nextjs";
 import type { Database } from "@/lib/supabase.types";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ type SupabaseContext = {
   supabase: SupabaseClient<Database>;
 };
 
-const Context = createContext<SupabaseContext | undefined>(undefined);
+export const Context = createContext<SupabaseContext | undefined>(undefined);
 
 export default function SupabaseProvider({
   children,
@@ -23,11 +23,13 @@ export default function SupabaseProvider({
   children: React.ReactNode;
 }) {
   const [supabase] = useState(() => createBrowserSupabaseClient());
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,7 +43,9 @@ export default function SupabaseProvider({
     supabase.auth.getSession().then((res) => {
       if (!res.data.session) {
         setIsOpen(true);
+        return;
       }
+      setUser(res.data.session.user);
     });
 
     return () => {
@@ -74,32 +78,47 @@ export default function SupabaseProvider({
                   );
                 }
 
-                await supabase.auth.signInWithOtp({
-                  email: email.trim(),
-                  options: {
-                    data: {
-                      username,
+                const { data: signUpData, error: signUpError } =
+                  await supabase.auth.signInWithOtp({
+                    email: email.trim(),
+                    options: {
+                      data: {
+                        username,
+                        full_name: fullName,
+                      },
                     },
-                  },
-                });
+                  });
 
+                if (signUpError) {
+                  return toast.error(signUpError.message);
+                }
+                toast.success("magic link sent successfully");
                 setIsLoading(false);
               }}
             >
               <Input
                 type="email"
                 placeholder="email"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
               <Input
                 type="text"
                 placeholder="username"
                 min={3}
+                value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="my-2"
               />
+              <Input
+                type="text"
+                placeholder="your name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="my-2"
+              />
               <p className="text-sm text-gray-900 my-2">
-                you will receive a login magic link here!
+                you will receive a login magic link!
               </p>
               <div className="flex w-full justify-end">
                 <Button disabled={isLoading}>Login</Button>

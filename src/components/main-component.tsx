@@ -27,8 +27,7 @@ const MainComponent = async () => {
       </div>
       <div className="w-full">
         {res &&
-          res.map(({ likes, tweet, profile, hasLiked }) => {
-            // console.log(likes);
+          res.map(({ likes, tweet, profile, hasLiked, replies }) => {
             return (
               <Tweet
                 key={tweet.id}
@@ -43,6 +42,7 @@ const MainComponent = async () => {
                 likesCount={likes.length}
                 currentUserId={userData.user?.id}
                 hasLiked={hasLiked}
+                repliesCount={replies.length}
               />
             );
           })}

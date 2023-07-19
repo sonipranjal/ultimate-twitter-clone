@@ -15,6 +15,13 @@
       "when": 1687967435759,
       "tag": "0001_reflective_doctor_strange",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1689789042694,
+      "tag": "0002_foamy_thundra",
+      "breakpoints": true
     }
   ]
 }

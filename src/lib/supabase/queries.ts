@@ -3,8 +3,16 @@
 import { Database } from "../supabase.types";
 import { supabaseServer } from ".";
 import { db } from "../db";
-import { Like, Profile, Tweet, likes, profiles, tweets } from "../db/schema";
-import { and, desc, eq, exists, sql } from "drizzle-orm";
+import {
+  Like,
+  Profile,
+  Tweet,
+  likes,
+  profiles,
+  tweets,
+  tweetsReplies,
+} from "../db/schema";
+import { and, desc, eq, exists } from "drizzle-orm";
 
 export type TweetType = Database["public"]["Tables"]["tweets"]["Row"] & {
   profiles: Pick<
@@ -17,7 +25,8 @@ export const getTweets = async (
   currentUserID?: string,
   getSingleTweetId?: string,
   orderBy?: boolean,
-  limit?: number
+  limit?: number,
+  replyId?: string
 ) => {
   try {
     let query = db
@@ -40,9 +49,12 @@ export const getTweets = async (
             }
           : {}),
         likes,
+        tweetsReplies,
       })
       .from(tweets)
+      .where(eq(tweets.isReply, Boolean(replyId)))
       .leftJoin(likes, eq(tweets.id, likes.tweetId))
+      .leftJoin(tweetsReplies, eq(tweets.id, tweetsReplies.replyId))
       .innerJoin(profiles, eq(tweets.profileId, profiles.id))
       .orderBy(desc(tweets.createdAt));
 
@@ -58,26 +70,57 @@ export const getTweets = async (
       query = query.limit(limit);
     }
 
+    if (replyId) {
+      query = query.where(eq(tweets.replyId, replyId));
+    }
+
     const rows = await query;
 
     if (rows) {
       const result = rows.reduce<
         Record<
           string,
-          { tweet: Tweet; likes: Like[]; profile: Profile; hasLiked: boolean }
+          {
+            tweet: Tweet;
+            likes: Like[];
+            profile: Profile;
+            hasLiked: boolean;
+            replies: Tweet[];
+          }
         >
       >((acc, row) => {
         const tweet = row.tweets;
         const like = row.likes;
         const profile = row.profiles;
         const hasLiked = Boolean(row.hasLiked);
+        const reply = row.tweetsReplies;
 
         if (!acc[tweet.id]) {
-          acc[tweet.id] = { tweet, likes: [], profile, hasLiked };
+          acc[tweet.id] = {
+            tweet,
+            likes: [],
+            profile,
+            hasLiked,
+            replies: [],
+          };
         }
 
         if (like) {
           acc[tweet.id].likes.push(like);
+          const ids = acc[tweet.id].likes.map(({ id }) => id);
+          const filteredLikesArr = acc[tweet.id].likes.filter(
+            ({ id }, index) => !ids.includes(id, index + 1)
+          );
+          acc[tweet.id].likes = filteredLikesArr;
+        }
+
+        if (reply) {
+          acc[tweet.id].replies.push(reply);
+          const ids = acc[tweet.id].replies.map(({ id }) => id);
+          const filteredRepliesArr = acc[tweet.id].replies.filter(
+            ({ id }, index) => !ids.includes(id, index + 1)
+          );
+          acc[tweet.id].replies = filteredRepliesArr;
         }
 
         return acc;

@@ -24,9 +24,15 @@ type TweetProps = {
   currentUserId?: string;
   likesCount: number;
   hasLiked: boolean;
+  repliesCount: number;
 };
 
-const Tweet = async ({ tweet, likesCount, hasLiked }: TweetProps) => {
+const Tweet = async ({
+  tweet,
+  likesCount,
+  hasLiked,
+  repliesCount,
+}: TweetProps) => {
   const router = useRouter();
 
   return (
@@ -61,9 +67,9 @@ const Tweet = async ({ tweet, likesCount, hasLiked }: TweetProps) => {
           >
             {tweet.tweetDetails.text}
           </div>
-          <div className="bg-slate-400 aspect-square w-full h-80 rounded-xl mt-2"></div>
+          {/* <div className="bg-slate-400 aspect-square w-full h-80 rounded-xl mt-2"></div> */}
           <div className="flex items-center justify-start space-x-20 mt-2 w-full">
-            <ReplyDialog tweet={tweet} />
+            <ReplyDialog tweet={tweet} repliesCount={repliesCount} />
             <div className="rounded-full hover:bg-white/10 transition duration-200 p-3 cursor-pointer">
               <AiOutlineRetweet />
             </div>

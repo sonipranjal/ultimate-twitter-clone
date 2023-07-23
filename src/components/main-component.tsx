@@ -14,7 +14,7 @@ const MainComponent = async () => {
   const { data: userData, error: userError } =
     await supabaseClient.auth.getUser();
 
-  const res = await getTweets(userData.user?.id);
+  const res = await getTweets({ currentUserID: userData.user?.id });
 
   return (
     <main className="flex w-full h-full min-h-screen flex-col border-l-[0.5px] border-r-[0.5px] border-gray-600">

@@ -1,3 +1,4 @@
+import { createServerComponentSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { BiHomeCircle, BiUser } from "react-icons/bi";
 import {
@@ -9,6 +10,7 @@ import {
 } from "react-icons/bs";
 import { HiOutlineHashtag } from "react-icons/hi";
 import { HiEnvelope } from "react-icons/hi2";
+import { cookies, headers } from "next/headers";
 
 const NAVIGATION_ITEMS = [
   {
@@ -41,7 +43,15 @@ const NAVIGATION_ITEMS = [
   },
 ];
 
-const LeftSidebar = () => {
+const LeftSidebar = async () => {
+  const supabaseClient = createServerComponentSupabaseClient({
+    cookies,
+    headers,
+  });
+
+  const { data: userData, error: userError } =
+    await supabaseClient.auth.getUser();
+
   return (
     <section className="w-[23%] sticky top-0 xl:flex flex-col items-stretch h-screen hidden">
       <div className="flex flex-col items-stretch h-full space-y-4 mt-4">
@@ -51,6 +61,8 @@ const LeftSidebar = () => {
             href={
               item.title.toLocaleLowerCase() === "home"
                 ? "/"
+                : item.title.toLocaleLowerCase() === "profile"
+                ? userData.user?.user_metadata.username || "#"
                 : `/${item.title.toLowerCase()}`
             }
             key={item.title}

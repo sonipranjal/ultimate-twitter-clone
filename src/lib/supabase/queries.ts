@@ -21,13 +21,21 @@ export type TweetType = Database["public"]["Tables"]["tweets"]["Row"] & {
   >;
 };
 
-export const getTweets = async (
-  currentUserID?: string,
-  getSingleTweetId?: string,
-  orderBy?: boolean,
-  limit?: number,
-  replyId?: string
-) => {
+export const getTweets = async ({
+  currentUserID,
+  getSingleTweetId,
+  limit,
+  orderBy,
+  replyId,
+  profileUsername,
+}: {
+  currentUserID?: string;
+  getSingleTweetId?: string;
+  orderBy?: boolean;
+  limit?: number;
+  replyId?: string;
+  profileUsername?: string;
+}) => {
   try {
     let query = db
       .select({
@@ -72,6 +80,12 @@ export const getTweets = async (
 
     if (replyId) {
       query = query.where(eq(tweets.replyId, replyId));
+    }
+
+    if (profileUsername) {
+      query = query.where(
+        and(eq(profiles.username, profileUsername), eq(tweets.isReply, false))
+      );
     }
 
     const rows = await query;

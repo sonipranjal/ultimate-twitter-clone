@@ -12,6 +12,7 @@
     "migrate": "npx bun run src/lib/db/migrate.ts"
   },
   "dependencies": {
+    "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.3",
     "@supabase/auth-helpers-nextjs": "^0.6.1",
     "@supabase/auth-helpers-react": "^0.3.1",

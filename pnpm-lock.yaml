@@ -20,6 +20,7 @@ specifiers:
   eslint: 8.38.0
   eslint-config-next: 13.3.0
   lucide-react: ^0.172.0
+  nanoid: ^4.0.2
   next: ^13.4.7
   pg: ^8.11.1
   pg-pool: ^3.6.1
@@ -48,6 +49,7 @@ dependencies:
   eslint: 8.38.0
   eslint-config-next: 13.3.0_s4cpzdbtdesnkn2n76nyxlsofa
   lucide-react: 0.172.0_react@18.2.0
+  nanoid: 4.0.2
   next: 13.4.7_biqbaboplfbrettd7655fr4n2y
   pg: 8.11.1
   pg-pool: 3.6.1_pg@8.11.1
@@ -3020,6 +3022,12 @@ packages:
   /nanoid/3.3.6:
     resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+    dev: false
+
+  /nanoid/4.0.2:
+    resolution: {integrity: sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==}
+    engines: {node: ^14 || ^16 || >=18}
     hasBin: true
     dev: false
 

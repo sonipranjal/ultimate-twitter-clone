@@ -13,6 +13,7 @@ import { Profile, Tweet } from "@/lib/db/schema";
 
 import ReplyDialog from "./reply-dialog";
 import { useRouter } from "next/navigation";
+import ProfileAvatar from "./profile-avatar";
 
 dayjs.extend(relativeTime);
 
@@ -39,7 +40,11 @@ const Tweet = async ({
     <>
       <div className="border-b-[0.5px]  border-gray-600 p-2 flex space-x-4 w-full">
         <div>
-          <div className="w-10 h-10 bg-slate-200 rounded-full" />
+          <ProfileAvatar
+            username={tweet.userProfile.username}
+            avatarUrl={tweet.userProfile.avatarUrl}
+            isOnTimeline={true}
+          />
         </div>
         <div className="flex flex-col w-full">
           <div className="flex items-center w-full justify-between">

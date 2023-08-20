@@ -24,10 +24,27 @@ const UserProfilePage = async ({
     profileUsername: params.username,
   });
 
+  // useEffect(() => {
+  //   supabase.auth.getUser().then((res) => {
+  //     if (res.data.user?.id) {
+  //       const filePath = `public/${res.data.user?.id}`;
+
+  //       const {
+  //         data: { publicUrl },
+  //       } = supabase.storage.from("avatars").getPublicUrl(filePath);
+
+  //       setProfileImage(publicUrl);
+  //     }
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
   return (
     <main className="flex w-full  h-full min-h-screen flex-col border-l-[0.5px] border-r-[0.5px] border-gray-600">
       <div className="flex flex-col font-bold p-6 backdrop-blur bg-black/10 sticky top-0">
-        <ProfileAvatar username={params.username} />
+        <ProfileAvatar
+          username={params.username}
+          avatarUrl={getUserTweets ? getUserTweets[0].profile.avatarUrl : null}
+        />
         <h1 className="text-lg">
           {userData.user?.user_metadata?.username || "Profile"}
         </h1>

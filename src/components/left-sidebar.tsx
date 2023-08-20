@@ -81,8 +81,10 @@ const LeftSidebar = async () => {
         <div className="flex items-center space-x-2">
           <div className="rounded-full bg-slate-400 w-10 h-10"></div>
           <div className="text-left text-sm">
-            <div className="font-semibold">Club Of Coders</div>
-            <div className="">@clubofcoderscom</div>
+            <div className="font-semibold">
+              {userData.user?.user_metadata.full_name}
+            </div>
+            <div className="">@{userData.user?.user_metadata.username}</div>
           </div>
         </div>
         <div>

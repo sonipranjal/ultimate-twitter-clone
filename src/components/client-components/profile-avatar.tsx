@@ -1,33 +1,28 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useTransition } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSupabase } from "@/app/supabase-provider";
 import { toast } from "sonner";
+import { nanoid } from "nanoid";
+import { saveNewAvatar } from "@/lib/supabase/mutation";
 
 type ProfileAvatarProps = {
   username?: string;
+  avatarUrl: string | null;
+  isOnTimeline?: boolean;
 };
 
-const ProfileAvatar = ({ username }: ProfileAvatarProps) => {
+const ProfileAvatar = ({
+  username,
+  avatarUrl,
+  isOnTimeline = false,
+}: ProfileAvatarProps) => {
   const [profileImage, setProfileImage] = useState("");
 
   const { supabase } = useSupabase();
 
-  useEffect(() => {
-    supabase.auth.getUser().then((res) => {
-      if (res.data.user?.id) {
-        const filePath = `public/${res.data.user?.id}`;
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("avatars").getPublicUrl(filePath);
-
-        setProfileImage(publicUrl);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  let [isMutationLoading, startTransition] = useTransition();
 
   const uploadAvatar = async (file: File | null) => {
     if (file) {
@@ -36,20 +31,18 @@ const ProfileAvatar = ({ username }: ProfileAvatarProps) => {
       if (error) {
         return toast.error("please sign in");
       }
-      console.log(data.user.user_metadata.username, username);
+
       if (data.user.user_metadata.username !== username) {
         return toast.error("you can only change your profile pic");
       }
 
       setProfileImage(URL.createObjectURL(file));
 
-      const filePath = `public/${data.user.id}`;
-
-      await supabase.storage.from("avatars").remove([filePath]);
+      const newFilePath = `public/${data.user.id}-${nanoid()}`;
 
       const { data: uploadedRes, error: UploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
+        .upload(newFilePath, file);
 
       if (UploadError) {
         return toast.error(UploadError.message);
@@ -57,9 +50,13 @@ const ProfileAvatar = ({ username }: ProfileAvatarProps) => {
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      } = supabase.storage.from("avatars").getPublicUrl(newFilePath);
 
       setProfileImage(publicUrl);
+
+      startTransition(() =>
+        saveNewAvatar({ publicUrl, profileId: data.user.id })
+      );
     }
   };
 
@@ -74,15 +71,21 @@ const ProfileAvatar = ({ username }: ProfileAvatarProps) => {
   return (
     <div>
       <div className="relative w-fit">
-        <input
-          type="file"
-          name="user-avatar"
-          id="user-avatar"
-          className="invisible absolute"
-          accept="image/jpeg,image/png,image/jpg,image/gif"
-          onChange={(e) => uploadAvatar(e.target.files && e.target.files[0])}
-        />
-        <label htmlFor="user-avatar" className="cursor-pointer">
+        {!isOnTimeline && (
+          <input
+            type="file"
+            name="user-avatar"
+            id="user-avatar"
+            className="invisible absolute"
+            accept="image/jpeg,image/png,image/jpg,image/gif"
+            onChange={(e) => uploadAvatar(e.target.files && e.target.files[0])}
+            disabled={isMutationLoading}
+          />
+        )}
+        <label
+          htmlFor={isOnTimeline ? "" : "user-avatar"}
+          className={!isOnTimeline ? "cursor-pointer" : ""}
+        >
           <Avatar>
             {profileImage !== "" ? (
               <AvatarImage
@@ -92,7 +95,7 @@ const ProfileAvatar = ({ username }: ProfileAvatarProps) => {
               />
             ) : (
               <AvatarImage
-                src={""}
+                src={avatarUrl || ""}
                 alt={`@${username}`}
                 className="object-cover bg-center"
               />
